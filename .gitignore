@@ -1,0 +1,9 @@
+bin/
+build/
+**/*_templ.txt
+**/*_templ.go
+**/.env
+store.db
+temp/
+*.html
+todo.txt
