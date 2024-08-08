@@ -1,6 +1,6 @@
 <script setup>
 import Toaster from "./components/ui/toast/Toaster.vue";
-import Aside from "./components/Aside.vue";
+import AsidePanel from "@/components/AsidePanel.vue"
 import NewTableModal from "./components/collection/NewTableModal.vue";
 import { ref } from "vue";
 import { provide } from 'vue'
@@ -12,10 +12,11 @@ provide("showNewTableModal", showNewTableModal)
 </script>
 
 <template>
-  <Aside @openModal="showNewTableModal = true"></Aside>
+  <AsidePanel @openModal="showNewTableModal = true" />
 
   <NewTableModal :showNewTableModal="showNewTableModal" @closeModal="showNewTableModal = false"
-    @addTable="(n) => addToTable(n)"></NewTableModal>
+    @addTable="(n) => addToTable(n)" />
+
   <RouterView />
 
   <Toaster />

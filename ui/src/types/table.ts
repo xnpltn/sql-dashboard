@@ -1,6 +1,11 @@
 interface table {
-  id: number,
   name: string,
-  fields: string[]
+  fields: field[]
+}
+
+
+interface field {
+  name: string
+  data: string[]
 }
 
