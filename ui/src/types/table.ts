@@ -6,6 +6,7 @@ interface table {
 
 interface field {
   name: string
+  type: string
   data: string[]
 }
 

@@ -8,41 +8,32 @@ import {
 import { ref } from "vue"
 import { useTableStore } from '@/stores/tables';
 
-
-
-const tableStore = useTableStore()
-const emit = defineEmits(["closeModal"])
-
 defineProps({
   showNewTableModal: Boolean
 })
-
-let newTableName = ref("")
-let fields = ref([])
-
-const addField = (type) => {
-  console.log(type)
-  fields.value.push({ name: '', type })
-}
-
 const types = ["number", "text", "checkbox"]
-const selecteType = ref("")
-
+const tableStore = useTableStore()
+const emit = defineEmits(["closeModal"])
+const newTableName = ref("")
+const fields = ref([])
+const addField = (type) => {
+  fields.value.push({ name: '', type: type })
+}
 const removeField = (index) => {
   fields.value.splice(index, 1)
 }
-
 const createTable = () => {
-  console.log(selecteType)
-
   const tableData = {
     name: newTableName.value,
-    fields: fields.value.map((item) => item.name),
+    fields: fields.value.map((item) => {
+      return { name: item.name, type: item.type, data: [] }
+    }),
     id: tableStore.tables.length
   }
   tableStore.addTable(tableData)
   emit("closeModal")
 }
+
 </script>
 
 <template>
@@ -64,7 +55,7 @@ const createTable = () => {
       <div class="mb-4">
         <div class="text-sm text-gray-500 mb-2">System fields: id, created, updated</div>
         <div v-for="(field, index) in fields" :key="index" class="mb-2 flex items-center">
-          <input v-model="field.name" :type="field.type"
+          <input v-model="field.name" type="text"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             :placeholder='field.type'>
           <Button @click="removeField(index)" class="ml-2 text-red-500 hover:text-red-700">

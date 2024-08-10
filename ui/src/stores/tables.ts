@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { toast } from '@/components/ui/toast'
 
@@ -9,14 +9,17 @@ let data = [
     "fields": [
       {
         "name": "username",
+        "type": "text",
         "data": ["alice", "bob", "charlie"]
       },
       {
         "name": "email",
+        "type": "text",
         "data": ["alice@example.com", "bob@example.com", "charlie@example.com"]
       },
       {
         "name": "age",
+        "type": "number",
         "data": ["25", "30", "22"]
       }
     ]
@@ -26,14 +29,17 @@ let data = [
     "fields": [
       {
         "name": "product_name",
+        "type": "text",
         "data": ["Laptop", "Smartphone", "Tablet"]
       },
       {
         "name": "price",
+        "type": "number",
         "data": ["1000", "600", "400"]
       },
       {
         "name": "stock",
+        "type": "number",
         "data": ["50", "100", "200"]
       }
     ]
@@ -43,14 +49,17 @@ let data = [
     "fields": [
       {
         "name": "order_id",
+        "type": "number",
         "data": ["001", "002", "003"]
       },
       {
         "name": "customer",
+        "type": "text",
         "data": ["alice", "bob", "charlie"]
       },
       {
         "name": "product",
+        "type": "text",
         "data": ["Laptop", "Smartphone", "Tablet"]
       }
     ]
@@ -60,7 +69,7 @@ let data = [
 
 export const useTableStore = defineStore('tables', () => {
   const tables = ref(data)
-  function addTable(table: table) {
+  async function addTable(table: table) {
     tables.value.push(table)
     toast({ title: "Success", description: `table ${table.name} added successfully` })
   }
@@ -74,8 +83,17 @@ export const useTableStore = defineStore('tables', () => {
     }
     return tables
   }
+  async function addData(newData: any, table: table) {
+    Object.keys(newData).forEach(key => {
+      let field = table.fields.find(f => f.name === key);
+      if (field) {
+        field.data.push(newData[key]);
+      }
+    });
+    toast({ title: "Success", description: `record added successfully` })
+  }
 
-  return { tables, addTable, searchFilter }
+  return { tables, addTable, searchFilter, addData }
 })
 
 
