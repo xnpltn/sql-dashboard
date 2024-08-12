@@ -6,3 +6,4 @@ build/
 store.db
 temp/
 todo.txt
+tmp/

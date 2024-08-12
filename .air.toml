@@ -8,7 +8,7 @@ bin = "./bin/app"
 full_bin = "APP_ENV=dev APP_USER=air ./bin/app"
 args_bin = ["-port", '6969']
 include_ext = ["go", "css"]
-exclude_dir = ["assets","bin", "build"]
+exclude_dir = ["assets","bin", "build", "ui"]
 exclude_regex = ["\\.templ"]
 exclude_unchanged = true
 follow_symlink = true

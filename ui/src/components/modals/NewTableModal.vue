@@ -1,5 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
+import { type Title, DataType, type Sheet } from '@/types/table';
+import type { Ref } from 'vue';
 import {
   Popover,
   PopoverContent,
@@ -8,29 +10,40 @@ import {
 import { ref } from "vue"
 import { useTableStore } from '@/stores/tables';
 
-defineProps({
-  showNewTableModal: Boolean
-})
+defineProps<{ showNewTableModal: Boolean }>()
+
+// random string generator. for testing 
+function generateRandomString(length = 16) {
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
 const types = ["number", "text", "checkbox"]
 const tableStore = useTableStore()
 const emit = defineEmits(["closeModal"])
 const newTableName = ref("")
-const fields = ref([])
-const addField = (type) => {
-  fields.value.push({ name: '', type: type })
+const titles: Ref<Title[]> = ref([])
+const addTitle = () => {
+  titles.value.push({ id: generateRandomString(), name: "test", dataType: DataType.Tag, dataTypeString: "Text", sheet_id: "", createdAt: new Date, updatedAt: new Date })
 }
-const removeField = (index) => {
-  fields.value.splice(index, 1)
+const removeTitle = (index: number) => {
+  titles.value.splice(index, 1)
 }
-const createTable = () => {
-  const tableData = {
+const createSheet = () => {
+  const sheetData: Sheet = {
     name: newTableName.value,
-    fields: fields.value.map((item) => {
-      return { name: item.name, type: item.type, data: [] }
-    }),
-    id: tableStore.tables.length
+    titles: titles.value,
+    id: generateRandomString(),
+    rows: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+
   }
-  tableStore.addTable(tableData)
+  tableStore.addTable(sheetData)
   emit("closeModal")
 }
 
@@ -54,11 +67,11 @@ const createTable = () => {
       </div>
       <div class="mb-4">
         <div class="text-sm text-gray-500 mb-2">System fields: id, created, updated</div>
-        <div v-for="(field, index) in fields" :key="index" class="mb-2 flex items-center">
+        <div v-for="(field, index) in titles" :key="index" class="mb-2 flex items-center">
           <input v-model="field.name" type="text"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            :placeholder='field.type'>
-          <Button @click="removeField(index)" class="ml-2 text-red-500 hover:text-red-700">
+            :placeholder='field.dataTypeString'>
+          <Button @click="removeTitle(index)" class="ml-2 text-red-500 hover:text-red-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -74,7 +87,7 @@ const createTable = () => {
             </Button>
           </PopoverTrigger>
           <PopoverContent class="flex items-center justify-center max-w-80 flex-wrap">
-            <Button @click="addField(type.toLowerCase())"
+            <Button @click="addTitle()"
               class="w-full bg-white text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded shadow hover:bg-gray-100"
               v-for="type in types">
               {{ type }}
@@ -87,7 +100,7 @@ const createTable = () => {
         <Button @click="$emit('closeModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
           Cancel
         </Button>
-        <Button @click="createTable" class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
+        <Button @click="createSheet" class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
           Create
         </Button>
       </div>

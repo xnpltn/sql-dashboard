@@ -25,4 +25,5 @@ coverage
 *.sln
 *.sw?
 
+dist/
 *.tsbuildinfo

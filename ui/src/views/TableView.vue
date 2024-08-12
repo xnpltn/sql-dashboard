@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { useTableStore } from '@/stores/tables';
 import Button from '@/components/ui/button/Button.vue';
@@ -6,17 +6,17 @@ import { ref, watch } from 'vue';
 import NewEntryModal from '@/components/modals/NewEntryModal.vue';
 import NotFound from './NotFound.vue';
 import DataTable from '@/components/DataTable.vue';
-
+import type { Sheet } from '@/types/table';
 const route = useRoute()
 const showNewEntryModal = ref(false)
 const tableStore = useTableStore()
-let table = tableStore.tables[route.params.id]
+let table = tableStore.tables.find((table) => table.id == route.params.id)
 
 
 watch(
   () => route.params.id,
   (id, _,) => {
-    table = tableStore.tables[parseInt(id)]
+    table = tableStore.tables.find(table => table.id == id)
   }
 )
 

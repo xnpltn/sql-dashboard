@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 
 import Button from './ui/button/Button.vue';
 import { RouterLink } from 'vue-router';
@@ -24,7 +24,7 @@ watch(searchValue, async (newValue) => {
     </div>
     <nav>
       <div class="flex items-center flex-col">
-        <RouterLink :to="`/table/` + index" v-for="(table, index) in tableStore.tables" :key="index"
+        <RouterLink :to="`/table/` + table.id" v-for="(table, index) in tableStore.tables" :key="index"
           class="mb-2  bg-gray-200 rounded w-full text-center cursor-pointer px-3 py-2 hover:bg-gray-300 capitalize">
           {{ table.name }}
         </RouterLink>
