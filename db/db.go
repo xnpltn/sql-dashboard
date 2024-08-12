@@ -24,8 +24,10 @@ func ConnectDB() {
 	}
 
 	db.AutoMigrate(
-		&models.Field{},
-		&models.Table{},
+		&models.Sheet{},
+		&models.Row{},
+		&models.Title{},
+		&models.Cell{},
 	)
 }
 

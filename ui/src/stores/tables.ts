@@ -21,7 +21,7 @@ export const useTableStore = defineStore('tables', () => {
       return tables.value
     }
   }
-  async function addData(newData: any, table: Sheet) {
+  async function addData(newData: any, _: Sheet) {
     toast({ title: "Success", description: `record added successfully` })
   }
 

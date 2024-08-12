@@ -33,7 +33,9 @@ watch(
           <h2 class="text-2xl font-semibold text-gray-700">{{ table.name }}</h2>
         </div>
         <div class="flex space-x-2">
-
+          <Button>
+            Delete Table
+          </Button>
           <Button @click="showNewEntryModal = true">
             + New Entry
           </Button>

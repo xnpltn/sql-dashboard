@@ -9,24 +9,16 @@ import {
 } from '@/components/ui/popover'
 import { ref } from "vue"
 import { useTableStore } from '@/stores/tables';
-
+import { generateRandomString } from '@/types/table';
 defineProps<{ showNewTableModal: Boolean }>()
 
-// random string generator. for testing 
-function generateRandomString(length = 16) {
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
 
 const types = ["number", "text", "checkbox"]
 const tableStore = useTableStore()
 const emit = defineEmits(["closeModal"])
 const newTableName = ref("")
 const titles: Ref<Title[]> = ref([])
+
 const addTitle = () => {
   titles.value.push({ id: generateRandomString(), name: "test", dataType: DataType.Tag, dataTypeString: "Text", sheet_id: "", createdAt: new Date, updatedAt: new Date })
 }
@@ -44,6 +36,9 @@ const createSheet = () => {
 
   }
   tableStore.addTable(sheetData)
+
+  titles.value = []
+  newTableName.value = ""
   emit("closeModal")
 }
 
@@ -67,10 +62,10 @@ const createSheet = () => {
       </div>
       <div class="mb-4">
         <div class="text-sm text-gray-500 mb-2">System fields: id, created, updated</div>
-        <div v-for="(field, index) in titles" :key="index" class="mb-2 flex items-center">
-          <input v-model="field.name" type="text"
+        <div v-for="(title, index) in titles" :key="index" class="mb-2 flex items-center">
+          <input v-model="title.name" type="text"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            :placeholder='field.dataTypeString'>
+            :placeholder='title.dataTypeString'>
           <Button @click="removeTitle(index)" class="ml-2 text-red-500 hover:text-red-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
