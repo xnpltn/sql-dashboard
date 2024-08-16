@@ -13,16 +13,16 @@ export interface Sheet {
   name: string;
   titles: Title[];
   rows: Row[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Row {
   id: string;
   cells: Cell[];
   sheet_id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Title {
@@ -31,8 +31,8 @@ export interface Title {
   dataType: DataType;
   dataTypeString: string;
   sheet_id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Cell {
@@ -42,8 +42,8 @@ export interface Cell {
   dataTypeString: string;
   value: string;
   row_id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 
@@ -59,8 +59,8 @@ export const exampleSheet1: Sheet = {
       dataType: DataType.Text,
       dataTypeString: "Text",
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date("123456"),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     },
     {
       id: "223e4567-e89b-12d3-a456-426614174002",
@@ -68,8 +68,8 @@ export const exampleSheet1: Sheet = {
       dataType: DataType.Boolean,
       dataTypeString: "Boolean",
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     }
   ],
   rows: [
@@ -83,8 +83,8 @@ export const exampleSheet1: Sheet = {
           dataTypeString: "Text",
           value: "Example Value 1",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
         {
           id: "423e4567-e89b-12d3-a456-426614174005",
@@ -93,14 +93,14 @@ export const exampleSheet1: Sheet = {
           dataTypeString: "Number",
           value: "42",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
 
       ],
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     },
 
     {
@@ -113,8 +113,8 @@ export const exampleSheet1: Sheet = {
           dataTypeString: "Text",
           value: "Example Value 1",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
         {
           id: "423e4567-e89b-12d3-a456-426614174005",
@@ -123,18 +123,18 @@ export const exampleSheet1: Sheet = {
           dataTypeString: "Number",
           value: "42",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
 
       ],
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     }
   ],
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: "today",
+  updatedAt: "today",
 };
 
 export const exampleSheet2: Sheet = {
@@ -147,8 +147,8 @@ export const exampleSheet2: Sheet = {
       dataType: DataType.Text,
       dataTypeString: "Text",
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date("123456"),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     },
     {
       id: "223e4567-e89b-12d3-a456-426614174002",
@@ -156,8 +156,8 @@ export const exampleSheet2: Sheet = {
       dataType: DataType.Boolean,
       dataTypeString: "Boolean",
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     }
   ],
   rows: [
@@ -171,8 +171,8 @@ export const exampleSheet2: Sheet = {
           dataTypeString: "Text",
           value: "Example Value 1",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
         {
           id: "423e4567-e89b-12d3-a456-426614174005",
@@ -181,14 +181,14 @@ export const exampleSheet2: Sheet = {
           dataTypeString: "Number",
           value: "42",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
 
       ],
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     },
 
     {
@@ -201,8 +201,8 @@ export const exampleSheet2: Sheet = {
           dataTypeString: "Text",
           value: "Example Value 1",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
         {
           id: "423e4567-e89b-12d3-a456-426614174005",
@@ -211,18 +211,18 @@ export const exampleSheet2: Sheet = {
           dataTypeString: "Number",
           value: "42",
           row_id: "323e4567-e89b-12d3-a456-426614174003",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "today",
+          updatedAt: "today",
         },
 
       ],
       sheet_id: "123e4567-e89b-12d3-a456-426614174000",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     }
   ],
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: "today",
+  updatedAt: "today",
 };
 
 

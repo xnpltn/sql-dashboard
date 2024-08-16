@@ -15,7 +15,9 @@ const tableStore = useTableStore()
 
 let newEntry = reactive({})
 
-const newRow: Ref<Row> = ref({ id: generateRandomString(), cells: [], sheet_id: props.table.id, createdAt: new Date(), updatedAt: new Date() })
+
+
+const newRow: Ref<Row> = ref({ id: generateRandomString(), cells: [], sheet_id: props.table.id, createdAt: "today", updatedAt: "today" })
 const cells: Ref<Cell[]> = ref([])
 function test() {
   Object.keys(newEntry).forEach((key) => {
@@ -26,8 +28,8 @@ function test() {
       dataTypeString: "Text",
       value: newEntry[key],
       row_id: "id",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: "today",
+      updatedAt: "today",
     }
     cells.value.push(cell)
   })

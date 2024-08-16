@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { type Title, DataType, type Sheet } from '@/types/table';
+import type { NewSheetParams, NewTitleParams } from '@/types/params';
 import type { Ref } from 'vue';
 import {
   Popover,
@@ -19,8 +20,9 @@ const emit = defineEmits(["closeModal"])
 const newTableName = ref("")
 const titles: Ref<Title[]> = ref([])
 
+
 const addTitle = () => {
-  titles.value.push({ id: generateRandomString(), name: "test", dataType: DataType.Tag, dataTypeString: "Text", sheet_id: "", createdAt: new Date, updatedAt: new Date })
+  titles.value.push({ id: generateRandomString(), name: "test", dataType: DataType.Tag, dataTypeString: "Text", sheet_id: "", createdAt: "taody", updatedAt: "today" })
 }
 const removeTitle = (index: number) => {
   titles.value.splice(index, 1)
@@ -31,11 +33,19 @@ const createSheet = () => {
     titles: titles.value,
     id: generateRandomString(),
     rows: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: "today",
+    updatedAt: "today",
 
   }
-  tableStore.addTable(sheetData)
+
+
+  const sheeparams: NewSheetParams = {
+    name: newTableName.value,
+    titles: titles.value.map((title) => {
+      return { name: title.name, dataType: title.dataType }
+    }),
+  }
+  tableStore.addTable(sheetData, sheeparams)
 
   titles.value = []
   newTableName.value = ""

@@ -17,12 +17,17 @@ func loadEntryRoutes(apiGroup *echo.Group, app core.App) {
 	entry.GET("/:id", handlers.GetEntry(app))
 }
 
-func loadTableRoutes(apiGroup *echo.Group, app core.App) {
-	table := apiGroup.Group("/table")
-	table.POST("", handlers.CreateTable(app))
-	table.DELETE("", handlers.DeleteAllTables(app))
-	table.DELETE("/:id", handlers.DeleteTable(app))
-	table.PUT("/:id", handlers.UpdateTable(app))
-	table.GET("", handlers.GetAllTables(app))
-	table.GET("/:id", handlers.GetTable(app))
+func loadSheetRoutes(apiGroup *echo.Group, app core.App) {
+	table := apiGroup.Group("/sheet")
+	table.POST("", handlers.CreateSheet(app))
+	table.DELETE("", handlers.DeleteAllSheets(app))
+	table.DELETE("/:id", handlers.DeleteSheet(app))
+	table.PUT("/:id", handlers.UpdateSheet(app))
+	table.GET("", handlers.GetAllSheets(app))
+	table.GET("/:id", handlers.GetSheet(app))
+}
+
+func loadRowRoutes(apiGroup *echo.Group, app core.App) {
+	table := apiGroup.Group("/row")
+	table.GET("/:sheetId", handlers.GetRows(app))
 }

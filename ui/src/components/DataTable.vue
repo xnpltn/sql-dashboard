@@ -19,8 +19,8 @@ defineProps<{ table: Sheet }>()
     <tbody>
       <tr v-if="table.rows" v-for="(row, rowIndex) in table.rows" :key="rowIndex"
         :class="rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'" class="hover:bg-gray-100">
-        <td class="p-3 text-sm text-gray-700">{{ new Date(row.cells[0].createdAt).toLocaleDateString() }}</td>
-        <td class="p-3 text-sm text-gray-700">{{ new Date(row.cells[0].updatedAt).toLocaleDateString() }}</td>
+        <td class="p-3 text-sm text-gray-700">{{ new Date("row.cells[0].createdAt").toLocaleDateString() }}</td>
+        <td class="p-3 text-sm text-gray-700">{{ new Date("row.cells[0].updatedAt").toLocaleDateString() }}</td>
         <td v-for="(cell, cellIndex) in row.cells" :key="cellIndex" class="p-3 text-sm text-gray-700">
           {{ cell.value }}
         </td>

@@ -51,7 +51,8 @@ func (a *app) Start(ctx context.Context) error {
 	apiGroup := a.router.Group("/api")
 	// initiate routes
 	loadEntryRoutes(apiGroup, a)
-	loadTableRoutes(apiGroup, a)
+	loadSheetRoutes(apiGroup, a)
+	loadRowRoutes(apiGroup, a)
 
 	// application routes
 

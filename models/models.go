@@ -35,10 +35,10 @@ type Row struct {
 }
 
 type Title struct {
-	ID             string `gorm:"type:string;primaryKey;default:(lower(hex(randomblob(16))))" json:"id"`
-	Name           string `json:"name"`
-	DataType       DataType
-	DataTypeString string    `json:"dataType"`
+	ID             string    `gorm:"type:string;primaryKey;default:(lower(hex(randomblob(16))))" json:"id"`
+	Name           string    `json:"name"`
+	DataType       DataType  `json:"dataType"`
+	DataTypeString string    `json:"dataTypeString"`
 	SheetID        string    `gorm:"not null"`
 	CreatedAt      time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt      time.Time `gorm:"autoUpdateTime" json:"updatedAt"`

@@ -2,21 +2,28 @@
 import { useRoute } from 'vue-router';
 import { useTableStore } from '@/stores/tables';
 import Button from '@/components/ui/button/Button.vue';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import NewEntryModal from '@/components/modals/NewEntryModal.vue';
 import NotFound from './NotFound.vue';
 import DataTable from '@/components/DataTable.vue';
 import type { Sheet } from '@/types/table';
+
 const route = useRoute()
 const showNewEntryModal = ref(false)
 const tableStore = useTableStore()
-let table = tableStore.tables.find((table) => table.id == route.params.id)
+const loading = ref(true)
+let table: Sheet;
+onMounted(async () => {
+  table = (await tableStore.tablesDB).find((table) => table.id == route.params.id) as Sheet
+  loading.value = false
+  console.log(table)
+})
 
 
 watch(
   () => route.params.id,
-  (id, _,) => {
-    table = tableStore.tables.find(table => table.id == id)
+  async () => {
+    table = (await tableStore.tablesDB).find((table) => table.id == route.params.id) as Sheet
   }
 )
 
@@ -24,8 +31,8 @@ watch(
 
 <template>
 
-  <div v-if="table" class="flex h-screen bg-gray-100 ml-80 max-w-[calc(100%-20rem)]">
-    <main class="flex-1 p-6">
+  <div v-if="!loading" class="flex h-screen bg-gray-100 ml-80 max-w-[calc(100%-20rem)]">
+    <main class="flex-1 p-6" v-if="!loading && table">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center">
           <h1 class="text-2xl font-semibold text-gray-700">Table</h1>
@@ -55,11 +62,15 @@ watch(
           </Button>
         </div>
       </div>
+      <NewEntryModal @closeEntryModal="showNewEntryModal = false" :table="table as Sheet"
+        :showNewEntryModal="showNewEntryModal" />
+    </main>
+    <main v-else class="flex-1 p-6">
+      <NotFound />
     </main>
   </div>
-  <div v-else>
-    <NotFound />
+  <div v-else class="flex h-screen bg-gray-100 ml-80 max-w-[calc(100%-20rem)]">
+    <div class="flex text-center justify-center items-center"></div>
   </div>
 
-  <NewEntryModal @closeEntryModal="showNewEntryModal = false" :table="table" :showNewEntryModal="showNewEntryModal" />
 </template>
