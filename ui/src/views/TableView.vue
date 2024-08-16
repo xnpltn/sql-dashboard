@@ -22,8 +22,8 @@ onMounted(async () => {
 
 watch(
   () => route.params.id,
-  async () => {
-    table = (await tableStore.tablesDB).find((table) => table.id == route.params.id) as Sheet
+  async (newId) => {
+    table = (await tableStore.tablesDB).find((table) => table.id == newId) as Sheet
   }
 )
 
