@@ -8,6 +8,8 @@ import (
 	"store/spdb/models"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreateSheet(app core.App) echo.HandlerFunc {
@@ -35,7 +37,27 @@ func GetAllSheets(app core.App) echo.HandlerFunc {
 
 func DeleteSheet(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return nil
+		var data map[string]string
+		c.Bind(&data)
+		if err := app.DB().Transaction(func(tx *gorm.DB) error {
+			// Find the sheet
+			var sheet models.Sheet
+			if err := tx.Where("id= ?", data["id"]).First(&sheet).Error; err != nil {
+				return err
+			}
+
+			// Delete associated records (assuming you have defined the relationships in your models)
+			if err := tx.Select(clause.Associations).Delete(&sheet).Error; err != nil {
+				return err
+			}
+
+			return nil
+		}); err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Successfully deleted sheet and associated data")
+		}
+		return c.JSON(http.StatusOK, "ok")
 	}
 }
 

@@ -13,8 +13,9 @@ const searchValue = ref("")
 
 const loading = ref(true)
 const tables: Ref<Sheet[]> = ref([])
-onMounted(async () => {
-  tables.value = await tableStore.tablesDB
+onBeforeMount(async () => {
+  await tableStore.tablesDB()
+  tables.value = tableStore.tables
   loading.value = false
 })
 

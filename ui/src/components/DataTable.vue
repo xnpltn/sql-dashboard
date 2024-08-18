@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { Sheet } from '@/types/table';
-
-defineProps<{ table: Sheet }>()
-
+import type { Sheet, Row } from '@/types/table';
+defineProps<{ table: Sheet, rows: Row[] }>()
 </script>
 
 <template>
@@ -17,10 +15,10 @@ defineProps<{ table: Sheet }>()
       </tr>
     </thead>
     <tbody>
-      <tr v-if="table.rows" v-for="(row, rowIndex) in table.rows" :key="rowIndex"
+      <tr v-if="table.rows" v-for="(row, rowIndex) in rows" :key="rowIndex"
         :class="rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'" class="hover:bg-gray-100">
-        <td class="p-3 text-sm text-gray-700">{{ new Date("row.cells[0].createdAt").toLocaleDateString() }}</td>
-        <td class="p-3 text-sm text-gray-700">{{ new Date("row.cells[0].updatedAt").toLocaleDateString() }}</td>
+        <td class="p-3 text-sm text-gray-700">{{ new Date(`${row.cells[0].createdAt}`).toLocaleDateString() }}</td>
+        <td class="p-3 text-sm text-gray-700">{{ new Date(`${row.cells[0].updatedAt}`).toLocaleDateString() }}</td>
         <td v-for="(cell, cellIndex) in row.cells" :key="cellIndex" class="p-3 text-sm text-gray-700">
           {{ cell.value }}
         </td>

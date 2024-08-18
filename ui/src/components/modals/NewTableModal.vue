@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/popover'
 import { ref } from "vue"
 import { useTableStore } from '@/stores/tables';
-import { generateRandomString } from '@/types/table';
 defineProps<{ showNewTableModal: Boolean }>()
 
 
@@ -18,34 +17,23 @@ const types = ["number", "text", "checkbox"]
 const tableStore = useTableStore()
 const emit = defineEmits(["closeModal"])
 const newTableName = ref("")
-const titles: Ref<Title[]> = ref([])
+const titles: Ref<NewTitleParams[]> = ref([])
 
 
 const addTitle = () => {
-  titles.value.push({ id: generateRandomString(), name: "test", dataType: DataType.Tag, dataTypeString: "Text", sheet_id: "", createdAt: "taody", updatedAt: "today" })
+  titles.value.push({ name: "test", dataType: DataType.Tag })
 }
 const removeTitle = (index: number) => {
   titles.value.splice(index, 1)
 }
 const createSheet = () => {
-  const sheetData: Sheet = {
-    name: newTableName.value,
-    titles: titles.value,
-    id: generateRandomString(),
-    rows: [],
-    createdAt: "today",
-    updatedAt: "today",
-
-  }
-
-
-  const sheeparams: NewSheetParams = {
+  const sheetParamas: NewSheetParams = {
     name: newTableName.value,
     titles: titles.value.map((title) => {
       return { name: title.name, dataType: title.dataType }
     }),
   }
-  tableStore.addTable(sheetData, sheeparams)
+  tableStore.addTable(sheetParamas)
 
   titles.value = []
   newTableName.value = ""
@@ -75,7 +63,7 @@ const createSheet = () => {
         <div v-for="(title, index) in titles" :key="index" class="mb-2 flex items-center">
           <input v-model="title.name" type="text"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            :placeholder='title.dataTypeString'>
+            placeholder='placeholder'>
           <Button @click="removeTitle(index)" class="ml-2 text-red-500 hover:text-red-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">

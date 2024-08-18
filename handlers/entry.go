@@ -1,14 +1,25 @@
 package handlers
 
 import (
+	"fmt"
+	"net/http"
+
 	"store/spdb/core"
+	"store/spdb/models"
 
 	"github.com/labstack/echo/v4"
 )
 
 func CreateEntry(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return nil
+		var newRow models.Row
+		c.Bind(&newRow)
+		if res := app.DB().Create(&newRow); res.Error != nil {
+			fmt.Println("error creating data", res.Error)
+		} else {
+			fmt.Println("data created successfully")
+		}
+		return c.JSON(http.StatusOK, "ok")
 	}
 }
 

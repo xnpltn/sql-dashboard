@@ -5,44 +5,45 @@ import Button from '../ui/button/Button.vue';
 import { reactive, ref } from 'vue';
 import { toast } from '../ui/toast';
 import { useTableStore } from '@/stores/tables';
+import { useRowsStore } from '@/stores/rows';
 import type { Cell, Row, Sheet } from '@/types/table';
 import type { Ref } from 'vue';
-import { DataType, generateRandomString } from '@/types/table';
-
+import type { NewCellParams, NewRowparams, NewTitleParams } from '@/types/params';
+import { DataType, } from '@/types/table';
+import { useRoute } from 'vue-router';
 const props = defineProps<{ showNewEntryModal: Boolean, table: Sheet }>()
 const emits = defineEmits(['closeEntryModal'])
 const tableStore = useTableStore()
+const rowStore = useRowsStore()
+const route = useRoute()
+interface newEntrParams {
+  [key: string]: any;
+}
 
-let newEntry = reactive({})
+let newEntry: newEntrParams = reactive({})
 
-
-
-const newRow: Ref<Row> = ref({ id: generateRandomString(), cells: [], sheet_id: props.table.id, createdAt: "today", updatedAt: "today" })
-const cells: Ref<Cell[]> = ref([])
-function test() {
+const newRow: Ref<NewRowparams> = ref({ cells: [], sheet_id: route.params.id as string })
+const cells: Ref<NewCellParams[]> = ref([])
+async function test() {
   Object.keys(newEntry).forEach((key) => {
-    const cell: Cell = {
-      id: generateRandomString(),
-      name: "Name",
+    const cell: NewCellParams = {
       dataType: DataType.Text,
-      dataTypeString: "Text",
       value: newEntry[key],
-      row_id: "id",
-      createdAt: "today",
-      updatedAt: "today",
     }
     cells.value.push(cell)
   })
   newRow.value.cells = cells.value
-  props.table.rows.push(newRow.value)
+  // props.table.rows.push(newRow.value)
+  await rowStore.newRow(newRow.value)
+
   // resetting 
+  console.log(newRow.value)
   cells.value = []
 }
 
 
-
 async function addData(newData: any) {
-  test()
+  await test()
   await tableStore.addData(newData, props.table)
   newEntry = reactive({})
   emits("closeEntryModal")
@@ -58,7 +59,8 @@ async function addData(newData: any) {
         <Label :for="title.name" class="block text-gray-700 text-sm font-medium mb-2">
           {{ title.name }} / <span class="text-gray-300 ">{{ title.dataTypeString }}</span>
         </Label>
-        <Input :name="title.name" type="text" v-model="newEntry[title.name]"
+        <Input :name="title.name" type="text" @input="newEntry.dataType ??= title.dataType"
+          v-model="newEntry[title.name]"
           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
       </div>
 
