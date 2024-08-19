@@ -7,7 +7,7 @@ export interface NewSheetParams {
 
 export interface NewTitleParams {
   name: string,
-  dataType: DataType,
+  dataTypeString: string,
 }
 
 

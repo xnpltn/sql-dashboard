@@ -1,6 +1,31 @@
 <script setup lang="ts">
 import type { Sheet, Row } from '@/types/table';
-defineProps<{ table: Sheet, rows: Row[] }>()
+import { onBeforeMount, ref, watch, type Ref } from 'vue';
+import { useRowsStore } from '@/stores/rows';
+import { Button } from '@/components/ui/button';
+import EditModal from '@/components/modals/EditModal.vue';
+
+const rowStore = useRowsStore()
+const props = defineProps<{ table: Sheet }>()
+const rows: Ref<Row[]> = ref([])
+const showEditModal = ref(false)
+
+onBeforeMount(async () => {
+  await rowStore.getRows(props.table.id)
+  rows.value = rowStore.rows
+})
+
+watch(
+  () => props.table.id, async () => {
+    await rowStore.getRows(props.table.id)
+    rows.value = rowStore.rows
+  })
+
+let rowToEdit: Row
+function triggerEditModal(index: number) {
+  rowToEdit = rows.value[index]
+}
+
 </script>
 
 <template>
@@ -22,10 +47,16 @@ defineProps<{ table: Sheet, rows: Row[] }>()
         <td v-for="(cell, cellIndex) in row.cells" :key="cellIndex" class="p-3 text-sm text-gray-700">
           {{ cell.value }}
         </td>
+        <td class="p-3 text-sm text-gray-700">
+          <Button class="bg-gray-400 text-black"
+            @click="() => { showEditModal = true; triggerEditModal(rowIndex) }">Edit</Button>
+        </td>
       </tr>
       <tr v-else>
         <td class="p-3 text-center text-gray-500" colspan="100%">No Data</td>
       </tr>
     </tbody>
   </table>
+  <EditModal v-if="showEditModal && rowToEdit" :show-edit-modal="showEditModal" :row="rowToEdit"
+    @closeEditModal="showEditModal = false" />
 </template>

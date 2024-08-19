@@ -8,7 +8,6 @@ type DataType uint8
 
 const (
 	Text DataType = iota
-	CheckBox
 	Status
 	Tag
 	Date
@@ -19,8 +18,8 @@ const (
 type Sheet struct {
 	ID        string    `gorm:"type:string;primaryKey;default:(lower(hex(randomblob(16))))" json:"id"`
 	Name      string    `json:"name" gorm:"type:varchar(100)"`
-	Titles    []Title   `json:"titles" gorm:"foreignKey:SheetID"`
-	Rows      []Row     `json:"rows" gorm:"foreignKey:SheetID"`
+	Titles    []Title   `json:"titles" gorm:"foreignKey:SheetID;constraint:OnDelete:CASCADE;"`
+	Rows      []Row     `json:"rows" gorm:"foreignKey:SheetID;constraint:OnDelete:CASCADE;"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 }
@@ -28,7 +27,7 @@ type Sheet struct {
 // Row represents a row in a spreadsheet, containing multiple cells.
 type Row struct {
 	ID        string    `gorm:"type:string;primaryKey;default:(lower(hex(randomblob(16))))" json:"id"`
-	Cells     []Cell    `json:"cells" gorm:"foreignKey:RowID"`
+	Cells     []Cell    `json:"cells" gorm:"foreignKey:RowID;constraint:OnDelete:CASCADE;"`
 	SheetID   string    `json:"sheet_id" gorm:"not null"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
@@ -48,10 +47,10 @@ type Title struct {
 type Cell struct {
 	ID             string    `gorm:"type:string;primaryKey;default:(lower(hex(randomblob(16))))" json:"id"`
 	Name           string    `gorm:"type:text" json:"name"`
-	DataType       DataType  `gorm:"type:int"`
-	DataTypeString string    `json:"dataType" gorm:"type:text"`
+	DataType       DataType  `gorm:"dataType"`
+	DataTypeString string    `json:"dataTypeString" gorm:"type:text"`
 	Value          string    `json:"value" gorm:"type:text not null"` // Using text type to store any value.
-	RowID          string    `gorm:"not null"`
+	RowID          string    `gorm:"not null;constraint:OnDelete:CASCADE;"`
 	CreatedAt      time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt      time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 }

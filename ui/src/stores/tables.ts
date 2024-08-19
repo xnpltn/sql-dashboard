@@ -18,7 +18,6 @@ export const useTableStore = defineStore('tables', () => {
         tables.value = data
       } else {
         toast({ title: "Error", description: `something went wrong ` })
-
       }
     } catch (e) {
       throw Error("something went wrong")

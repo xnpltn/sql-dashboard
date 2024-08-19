@@ -1,5 +1,5 @@
 export enum DataType {
-  Text,
+  Text = 0,
   Boolean,
   Status,
   Tag,
@@ -28,7 +28,7 @@ export interface Row {
 export interface Title {
   id: string;
   name: string;
-  dataType: DataType;
+  dataType: number;
   dataTypeString: string;
   sheet_id: string;
   createdAt: string;
@@ -38,7 +38,7 @@ export interface Title {
 export interface Cell {
   id: string;
   name: string;
-  dataType: DataType;
+  dataType: number;
   dataTypeString: string;
   value: string;
   row_id: string;

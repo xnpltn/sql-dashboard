@@ -1,53 +1,59 @@
 <script setup lang="ts">
-import Input from '../ui/input/Input.vue';
-import { Label } from '../ui/label';
-import Button from '../ui/button/Button.vue';
-import { reactive, ref } from 'vue';
-import { toast } from '../ui/toast';
+import { reactive, ref, } from 'vue';
 import { useTableStore } from '@/stores/tables';
 import { useRowsStore } from '@/stores/rows';
-import type { Cell, Row, Sheet } from '@/types/table';
-import type { Ref } from 'vue';
-import type { NewCellParams, NewRowparams, NewTitleParams } from '@/types/params';
-import { DataType, } from '@/types/table';
-import { useRoute } from 'vue-router';
-const props = defineProps<{ showNewEntryModal: Boolean, table: Sheet }>()
-const emits = defineEmits(['closeEntryModal'])
-const tableStore = useTableStore()
-const rowStore = useRowsStore()
-const route = useRoute()
-interface newEntrParams {
+import Input from '../ui/input/Input.vue';
+import Button from '../ui/button/Button.vue';
+import { Label } from '../ui/label';
+import { toast } from '../ui/toast';
+import type { Sheet } from '@/types/table';
+import type { NewCellParams, NewRowparams, } from '@/types/params';
+
+const props = defineProps<{ showNewEntryModal: Boolean, table: Sheet }>();
+const emits = defineEmits(['closeEntryModal']);
+
+const tableStore = useTableStore();
+const rowStore = useRowsStore();
+
+interface NewEntryParams {
   [key: string]: any;
 }
 
-let newEntry: newEntrParams = reactive({})
+const newEntry = reactive<NewEntryParams>({});
+const newRow = ref<NewRowparams>({ cells: [], sheet_id: props.table.id });
+const cells = ref<NewCellParams[]>([]);
 
-const newRow: Ref<NewRowparams> = ref({ cells: [], sheet_id: route.params.id as string })
-const cells: Ref<NewCellParams[]> = ref([])
-async function test() {
-  Object.keys(newEntry).forEach((key) => {
-    const cell: NewCellParams = {
-      dataType: DataType.Text,
-      value: newEntry[key],
-    }
-    cells.value.push(cell)
-  })
-  newRow.value.cells = cells.value
-  // props.table.rows.push(newRow.value)
-  await rowStore.newRow(newRow.value)
+async function saveEntry(entry: NewEntryParams) {
+  console.table(entry);
 
-  // resetting 
-  console.log(newRow.value)
-  cells.value = []
+  Object.keys(newEntry).forEach((key, i) => {
+    cells.value[i] = {
+      dataType: newEntry.dataType,
+      value: entry[key],
+    };
+  });
+
+  newRow.value.cells = cells.value.filter(cell => !!cell.value);
+  console.log("length is: ", newRow.value.cells.length);
+
+  await rowStore.newRow(newRow.value);
+  await rowStore.getRows(newRow.value.sheet_id)
+
+  // Resetting 
+  cells.value = [];
 }
 
+async function addData(newData: NewEntryParams) {
+  await saveEntry(newEntry);
+  await tableStore.addData(newData, props.table);
+  await tableStore.tablesDB()
+  await rowStore.getRows(props.table.id)
 
-async function addData(newData: any) {
-  await test()
-  await tableStore.addData(newData, props.table)
-  newEntry = reactive({})
-  emits("closeEntryModal")
-  toast({ title: "Success", description: `record added successfully` })
+  // Resetting the form
+  Object.keys(newEntry).forEach(key => delete newEntry[key]);
+
+  emits("closeEntryModal");
+  toast({ title: "Success", description: "Record added successfully" });
 }
 
 </script>
@@ -57,7 +63,7 @@ async function addData(newData: any) {
     <div class="bg-white rounded-lg w-1/3 p-6">
       <div v-for="(title, index) in table.titles" :key="index" class="mb-4">
         <Label :for="title.name" class="block text-gray-700 text-sm font-medium mb-2">
-          {{ title.name }} / <span class="text-gray-300 ">{{ title.dataTypeString }}</span>
+          {{ title.name }} / <span class="text-gray-300">{{ title.dataTypeString }}</span>
         </Label>
         <Input :name="title.name" type="text" @input="newEntry.dataType ??= title.dataType"
           v-model="newEntry[title.name]"
@@ -74,6 +80,5 @@ async function addData(newData: any) {
         </Button>
       </div>
     </div>
-
   </div>
 </template>

@@ -14,7 +14,8 @@ func CreateEntry(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var newRow models.Row
 		c.Bind(&newRow)
-		if res := app.DB().Create(&newRow); res.Error != nil {
+		fmt.Println("len cells: ", len(newRow.Cells))
+		if res := app.DB().Where("sheet_id = ? ", newRow.SheetID).Create(&newRow); res.Error != nil {
 			fmt.Println("error creating data", res.Error)
 		} else {
 			fmt.Println("data created successfully")

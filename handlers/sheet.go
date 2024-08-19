@@ -15,22 +15,59 @@ import (
 func CreateSheet(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var sheet models.Sheet
-		err := c.Bind(&sheet)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			app.DB().Create(&sheet)
-			fmt.Println("data added succesffuly")
+		if err := c.Bind(&sheet); err != nil {
+			fmt.Println("Error binding sheet:", err)
+			return c.JSON(http.StatusBadRequest, "Invalid request")
 		}
 
-		return c.JSON(http.StatusOK, "ok")
+		for i, title := range sheet.Titles {
+			if title.DataTypeString == "" {
+				fmt.Println("Error: DataTypeString is empty for title at index", i)
+				continue
+			}
+			/*
+				const dataTypes: string[] = [
+				  "Text",
+				  "Status",
+				  "Tag",
+				  "Date",
+				  "Number",
+				  "Label"
+				];
+			*/
+
+			switch title.DataTypeString {
+			case "Text":
+				sheet.Titles[i].DataType = models.Text
+			case "Label":
+				sheet.Titles[i].DataType = models.Label
+			case "Tag":
+				sheet.Titles[i].DataType = models.Tag
+			case "Number":
+				sheet.Titles[i].DataType = models.Number
+			case "Date":
+				sheet.Titles[i].DataType = models.Date
+			default:
+				fmt.Println("Warning: Unrecognized DataTypeString: ", title.DataTypeString, "Defaulting to Text!")
+				sheet.Titles[i].DataType = models.Text
+			}
+		}
+
+		if res := app.DB().Create(&sheet); res.Error != nil {
+			fmt.Println("Error occured creating sheet!", res.Error.Error())
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "can't create table"})
+		}
+		fmt.Println("Data added successfully")
+		return c.JSON(http.StatusOK, "Sheet created successfully")
 	}
 }
 
 func GetAllSheets(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var sheets []models.Sheet
-		app.DB().Preload("Rows").Preload("Rows.Cells").Preload("Titles").Find(&sheets)
+		if res := app.DB().Preload("Rows").Preload("Rows.Cells").Preload("Titles").Find(&sheets); res.Error != nil {
+			fmt.Println(res.Error)
+		}
 		return c.JSON(http.StatusOK, sheets)
 	}
 }
@@ -38,26 +75,39 @@ func GetAllSheets(app core.App) echo.HandlerFunc {
 func DeleteSheet(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var data map[string]string
-		c.Bind(&data)
+		if err := c.Bind(&data); err != nil {
+			fmt.Println("error binding data: ", err.Error())
+			return c.JSON(http.StatusBadRequest, "invalid request")
+		}
+
+		sheetID := data["id"]
+		if sheetID == "" {
+			fmt.Println("error: sheet ID is missing")
+			return c.JSON(http.StatusBadRequest, "sheet ID is required")
+		}
+
 		if err := app.DB().Transaction(func(tx *gorm.DB) error {
 			// Find the sheet
 			var sheet models.Sheet
-			if err := tx.Where("id= ?", data["id"]).First(&sheet).Error; err != nil {
+			if err := tx.Preload(clause.Associations).Where("id = ?", sheetID).First(&sheet).Error; err != nil {
+				fmt.Println("error getting sheet from id: ", err.Error())
 				return err
 			}
 
-			// Delete associated records (assuming you have defined the relationships in your models)
+			// Delete the sheet and associated records
 			if err := tx.Select(clause.Associations).Delete(&sheet).Error; err != nil {
+				fmt.Println("error deleting sheet and associations: ", err.Error())
 				return err
 			}
 
 			return nil
 		}); err != nil {
-			fmt.Println("Error:", err)
-		} else {
-			fmt.Println("Successfully deleted sheet and associated data")
+			fmt.Println("Transaction error:", err)
+			return c.JSON(http.StatusInternalServerError, "failed to delete sheet")
 		}
-		return c.JSON(http.StatusOK, "ok")
+
+		fmt.Println("Successfully deleted sheet and associated data")
+		return c.JSON(http.StatusOK, "sheet deleted successfully")
 	}
 }
 

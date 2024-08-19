@@ -3,7 +3,7 @@
 import Button from './ui/button/Button.vue';
 import { RouterLink } from 'vue-router';
 import { useTableStore } from '@/stores/tables';
-import { onBeforeMount, onMounted, ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import type { Sheet } from '@/types/table';
 import type { Ref } from "vue"
 
@@ -19,9 +19,8 @@ onBeforeMount(async () => {
   loading.value = false
 })
 
-watch(searchValue, async (newValue) => {
-  tableStore.tables = tableStore.searchFilter(newValue.trim())
-})
+watch(searchValue, async (newValue) => { tableStore.tables = tableStore.searchFilter(newValue.trim()) })
+watch(() => tableStore.tables, (newt) => tables.value = newt)
 
 </script>
 
@@ -38,14 +37,17 @@ watch(searchValue, async (newValue) => {
           {{ table.name }}
         </RouterLink>
       </div>
-      <div v-else> NO TABLES</div>
+      <div v-else class=" mb-3 flex rounded bg-gray-300 w-full flex-col items-center gap-3 justify-center">
+        <h3 class="text-2xl text-center"> No Tables</h3>
+      </div>
     </nav>
     <nav v-else>
       Loading
     </nav>
-    <Button @click="$emit('openModal')" class="w-full bg-gray-50 hover:bg-gray-200 text-black border-black border-2">+
-      New
-      Table</Button>
+    <Button @click="$emit('openModal')"
+      class=" mt-3 w-full bg-gray-50 hover:bg-gray-200 text-black border-black border-2">+
+      NewTable
+    </Button>
   </aside>
 
 </template>
