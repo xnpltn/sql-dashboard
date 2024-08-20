@@ -20,3 +20,7 @@ export interface NewCellParams {
   dataType: DataType,
   value: string
 }
+
+export interface NewEntryParams {
+  [key: string]: any;
+}

@@ -7,7 +7,7 @@ import Button from '../ui/button/Button.vue';
 import { Label } from '../ui/label';
 import { toast } from '../ui/toast';
 import type { Sheet } from '@/types/table';
-import type { NewCellParams, NewRowparams, } from '@/types/params';
+import type { NewCellParams, NewRowparams, NewEntryParams } from '@/types/params';
 
 const props = defineProps<{ showNewEntryModal: Boolean, table: Sheet }>();
 const emits = defineEmits(['closeEntryModal']);
@@ -15,17 +15,12 @@ const emits = defineEmits(['closeEntryModal']);
 const tableStore = useTableStore();
 const rowStore = useRowsStore();
 
-interface NewEntryParams {
-  [key: string]: any;
-}
 
 const newEntry = reactive<NewEntryParams>({});
 const newRow = ref<NewRowparams>({ cells: [], sheet_id: props.table.id });
 const cells = ref<NewCellParams[]>([]);
 
 async function saveEntry(entry: NewEntryParams) {
-  console.table(entry);
-
   Object.keys(newEntry).forEach((key, i) => {
     cells.value[i] = {
       dataType: newEntry.dataType,
@@ -34,7 +29,6 @@ async function saveEntry(entry: NewEntryParams) {
   });
 
   newRow.value.cells = cells.value.filter(cell => !!cell.value);
-  console.log("length is: ", newRow.value.cells.length);
 
   await rowStore.newRow(newRow.value);
   await rowStore.getRows(newRow.value.sheet_id)

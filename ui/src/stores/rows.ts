@@ -30,7 +30,6 @@ export const useRowsStore = defineStore("rows", () => {
         await getRows(data.sheet_id)
         toast({ title: "Success ", description: ` new entry created` })
       }
-      console.log(response)
     } catch (e) {
       toast({ title: "Error", description: "Something went wrong" })
     }

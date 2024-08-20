@@ -4,16 +4,12 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import Delete from '../icons/Delete.vue';
-import { useRowsStore } from '@/stores/rows';
-
 
 defineProps<{ showEditModal: Boolean, row: Row }>();
-const emit = defineEmits(["closeEditModal"])
-const rowStore = useRowsStore()
+const emit = defineEmits(["closeEditModal", "deleteRow"])
 
 async function deleteRow(row: Row) {
-  await rowStore.deleteRow(row)
-  await rowStore.getRows(row.id)
+  emit("deleteRow", row)
   emit("closeEditModal")
 } 
 </script>

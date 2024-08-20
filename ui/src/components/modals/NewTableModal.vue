@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
-import { type Title, DataType, type Sheet } from '@/types/table';
 import type { NewSheetParams, NewTitleParams } from '@/types/params';
 import type { Ref } from 'vue';
 import {
@@ -9,7 +8,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import Input from '../ui/input/Input.vue';
-import Label from '../ui/label/Label.vue';
 import { ref } from "vue"
 import { useTableStore } from '@/stores/tables';
 

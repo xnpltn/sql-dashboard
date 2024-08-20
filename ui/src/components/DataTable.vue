@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import type { Sheet, Row } from '@/types/table';
+import type { Sheet as Shit, Row } from '@/types/table';
 import { onBeforeMount, ref, watch, type Ref } from 'vue';
 import { useRowsStore } from '@/stores/rows';
 import { Button } from '@/components/ui/button';
-import EditModal from '@/components/modals/EditModal.vue';
+import Label from './ui/label/Label.vue';
+import Delete from './icons/Delete.vue';
+import Input from './ui/input/Input.vue';
 
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 const rowStore = useRowsStore()
-const props = defineProps<{ table: Sheet }>()
+const props = defineProps<{ table: Shit }>()
 const rows: Ref<Row[]> = ref([])
-const showEditModal = ref(false)
 
 onBeforeMount(async () => {
   await rowStore.getRows(props.table.id)
@@ -21,9 +30,22 @@ watch(
     rows.value = rowStore.rows
   })
 
-let rowToEdit: Row
-function triggerEditModal(index: number) {
-  rowToEdit = rows.value[index]
+function deleteRow(row: Row) {
+  rowStore.deleteRow(row).then(() => {
+    rowStore.getRows(props.table.id)
+  })
+}
+
+watch(
+  () => rowStore.rows,
+  (newRows) => {
+    rows.value = newRows
+  }
+)
+let editRow: Row;
+function edit(rowIndex: number) {
+  console.log(editRow)
+
 }
 
 </script>
@@ -42,14 +64,51 @@ function triggerEditModal(index: number) {
     <tbody>
       <tr v-if="table.rows" v-for="(row, rowIndex) in rows" :key="rowIndex"
         :class="rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'" class="hover:bg-gray-100">
-        <td class="p-3 text-sm text-gray-700">{{ new Date(`${row.cells[0].createdAt}`).toLocaleDateString() }}</td>
-        <td class="p-3 text-sm text-gray-700">{{ new Date(`${row.cells[0].updatedAt}`).toLocaleDateString() }}</td>
+        <td class="p-3 text-sm text-gray-700">
+          {{ new Date(`${row.cells[0].createdAt}`).toLocaleString() }}
+        </td>
+        <td class="p-3 text-sm text-gray-700">
+          {{ new Date(`${row.cells[0].updatedAt}`).toLocaleString() }}
+        </td>
         <td v-for="(cell, cellIndex) in row.cells" :key="cellIndex" class="p-3 text-sm text-gray-700">
           {{ cell.value }}
         </td>
-        <td class="p-3 text-sm text-gray-700">
-          <Button class="bg-gray-400 text-black"
-            @click="() => { showEditModal = true; triggerEditModal(rowIndex) }">Edit</Button>
+        <td>
+          <Sheet>
+            <SheetTrigger class="">
+              <span class="bg-gray-300 p-2 rounded">Edit</span>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Edit Data</SheetTitle>
+                <SheetDescription>
+                  Edit. This Action Is reversible once saved
+                </SheetDescription>
+              </SheetHeader>
+              <div class="bg-white rounded-lg w-full max-w-lg p-8 shadow-lg">
+                <div class="flex items-center justify-between">
+                  <span></span>
+                  <Button @click="deleteRow(row)" class="bg-gray-300 p-2 rounded">
+                    <Delete :height="24" :width="24" class="text-black" />
+                  </Button>
+                </div>
+                <div v-for="(cell, index) in row.cells" :key="index" class="mb-4">
+                  <Label :for="`cell-${index}`" class="block text-gray-700 text-sm font-medium mb-2">
+                    Cell {{ index + 1 }}
+                  </Label>
+                  <Input :id="`cell-${index}`" :placeholder="cell.value" @change="console.log('hi')"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+
+                <div class="flex justify-end space-x-4 mt-6">
+                  <Button @click="editRow = row; edit(rowIndex)"
+                    class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md">
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </td>
       </tr>
       <tr v-else>
@@ -57,6 +116,4 @@ function triggerEditModal(index: number) {
       </tr>
     </tbody>
   </table>
-  <EditModal v-if="showEditModal && rowToEdit" :show-edit-modal="showEditModal" :row="rowToEdit"
-    @closeEditModal="showEditModal = false" />
 </template>
