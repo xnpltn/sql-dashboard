@@ -9,6 +9,10 @@ import type { Sheet } from '@/types/table';
 import { useTableStore } from '@/stores/tables';
 import { useRowsStore } from '@/stores/rows';
 import Delete from '@/components/icons/Delete.vue';
+import Settings from '@/components/icons/Settings.vue';
+import Refresh from '@/components/icons/Refresh.vue';
+import EditTableSheet from '@/components/ui/sheets/EditTableSheet.vue';
+
 import { RouterLink } from 'vue-router';
 
 const route = useRoute()
@@ -43,6 +47,10 @@ async function deleteTable(t: Sheet) {
   await router.push("/");
 }
 
+function refresh(t: Sheet) {
+  console.log("refreshing...")
+}
+
 </script>
 
 <template>
@@ -50,11 +58,15 @@ async function deleteTable(t: Sheet) {
   <div v-if="!loading" class="flex h-screen bg-gray-100 ml-80 max-w-[calc(100%-20rem)]">
     <main class="flex-1 p-6" v-if="!loading && table">
       <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center">
-          <RouterLink to="/">Home</RouterLink>
-          <h1 class="text-2xl font-semibold text-gray-700">Table</h1>
+        <div class="flex items-center gap-3">
+          <h1 class="text-sm font-semibold text-gray-500 lowercase">Table</h1>
           <span class="mx-2 text-gray-500">/</span>
-          <h2 class="text-2xl font-semibold text-gray-700">{{ table.name }}</h2>
+          <h2 class="text-sm font-semibold text-gray-700 lowercase ">{{ table.name }}</h2>
+          <EditTableSheet :table="table" />
+
+          <button @click="refresh(table)">
+            <Refresh :height="24" :width="24" class="bg-none text-black" />
+          </button>
         </div>
         <div class="flex space-x-2">
           <Button @click="deleteTable(table)" class="bg-red-700 hover:bg-red-900 flex items-center justify-center">

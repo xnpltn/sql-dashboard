@@ -47,8 +47,18 @@ export const useRowsStore = defineStore("rows", () => {
       toast({ title: "Error", description: "Something went wrong" })
     }
   }
+
+  async function deleteRows(rows: Row[]) {
+    try {
+      const response = await fetch(`${API}/delete-rows`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(rows) })
+      console.log(await response.json())
+    } catch (e) {
+      toast({ title: "Error", description: "Something went wrong" })
+    }
+  }
+
   async function editRow(editRowParams: any) {
     console.log(editRowParams)
   }
-  return { rows, getRows, newRow, editRow, deleteRow }
+  return { rows, getRows, newRow, editRow, deleteRow, deleteRows }
 })

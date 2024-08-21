@@ -45,3 +45,19 @@ func DeleteRow(app core.App) echo.HandlerFunc {
 		return c.JSON(http.StatusOK, echo.Map{"success": "deleted successfully"})
 	}
 }
+
+func DeleteRows(app core.App) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var rows []models.Row
+		if err := c.Bind(&rows); err != nil {
+			fmt.Println(err)
+			return c.JSON(http.StatusBadRequest, echo.Map{"error": "Something went wrong"})
+		}
+		if res := app.DB().Delete(&rows); res.Error != nil {
+			fmt.Println(res.Error)
+			return c.JSON(http.StatusBadRequest, echo.Map{"error": "Something went wrong"})
+		}
+		fmt.Println("successfully deleted rows")
+		return c.JSON(http.StatusOK, echo.Map{"message": "deleted successfully"})
+	}
+}

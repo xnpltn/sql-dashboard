@@ -30,5 +30,6 @@ func loadSheetRoutes(apiGroup *echo.Group, app core.App) {
 func loadRowRoutes(apiGroup *echo.Group, app core.App) {
 	table := apiGroup.Group("/row")
 	apiGroup.DELETE("/delete-row/:id", handlers.DeleteRow(app))
+	apiGroup.POST("/delete-rows", handlers.DeleteRows(app))
 	table.GET("/:sheetId", handlers.GetRows(app))
 }
