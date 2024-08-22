@@ -137,6 +137,16 @@ func UpdateSheet(app core.App) echo.HandlerFunc {
 	}
 }
 
+func SearchSheet(app core.App) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var params echo.Map
+
+		c.Bind(&params)
+		fmt.Println(params)
+		return nil
+	}
+}
+
 func GetSheet(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return nil

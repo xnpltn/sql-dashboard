@@ -20,6 +20,7 @@ func loadEntryRoutes(apiGroup *echo.Group, app core.App) {
 func loadSheetRoutes(apiGroup *echo.Group, app core.App) {
 	table := apiGroup.Group("/sheet")
 	table.POST("", handlers.CreateSheet(app))
+	table.POST("/search", handlers.SearchSheet(app))
 	table.DELETE("", handlers.DeleteAllSheets(app))
 	table.DELETE("/:id", handlers.DeleteSheet(app))
 	table.PUT("/:id", handlers.UpdateSheet(app))

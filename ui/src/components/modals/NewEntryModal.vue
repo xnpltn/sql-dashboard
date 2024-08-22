@@ -59,6 +59,9 @@ async function addData(newData: NewEntryParams) {
 <template>
   <div v-if="showNewEntryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg w-1/3 p-6">
+      <div class="p-3 flex items-center justify-center">
+        <h3>Add entry</h3>
+      </div>
       <div v-for="(title, index) in table.titles" :key="index" class="mb-4">
         <Label :for="title.name" class="block text-gray-700 text-sm font-medium mb-2">
           {{ title.name }} / <span class="text-gray-300">{{ title.dataTypeString }}</span>
