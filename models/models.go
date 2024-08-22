@@ -49,8 +49,8 @@ type Cell struct {
 	Name           string    `gorm:"type:text" json:"name"`
 	DataType       DataType  `gorm:"dataType"`
 	DataTypeString string    `json:"dataTypeString" gorm:"type:text"`
-	Value          string    `json:"value" gorm:"type:text not null"` // Using text type to store any value.
-	RowID          string    `gorm:"not null;constraint:OnDelete:CASCADE;"`
+	Value          string    `json:"value" gorm:"type:text not null;default:'<empty>'"` // Using text type to store any value.
+	RowID          string    `gorm:"not null"`
 	CreatedAt      time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt      time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 }

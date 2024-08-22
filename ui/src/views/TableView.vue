@@ -9,11 +9,10 @@ import type { Sheet } from '@/types/table';
 import { useTableStore } from '@/stores/tables';
 import { useRowsStore } from '@/stores/rows';
 import Delete from '@/components/icons/Delete.vue';
-import Settings from '@/components/icons/Settings.vue';
 import Refresh from '@/components/icons/Refresh.vue';
 import EditTableSheet from '@/components/ui/sheets/EditTableSheet.vue';
 
-import { RouterLink } from 'vue-router';
+import { toast } from '@/components/ui/toast';
 
 const route = useRoute()
 const router = useRouter()
@@ -48,7 +47,13 @@ async function deleteTable(t: Sheet) {
 }
 
 function refresh(t: Sheet) {
-  console.log("refreshing...")
+  tableStore.tablesDB().then(() => {
+    rowStore.getRows(t.id).then(() => {
+      toast({ title: "Refresh", description: "Refresh done" })
+    }).catch(() => {
+      toast({ title: "Refresh", description: "Something Went Wrong" })
+    })
+  })
 }
 
 </script>
@@ -65,7 +70,7 @@ function refresh(t: Sheet) {
           <EditTableSheet :table="table" />
 
           <button @click="refresh(table)">
-            <Refresh :height="24" :width="24" class="bg-none text-black" />
+            <Refresh :height="20" :width="20" class="bg-none text-black" />
           </button>
         </div>
         <div class="flex space-x-2">

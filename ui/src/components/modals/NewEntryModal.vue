@@ -18,23 +18,27 @@ const rowStore = useRowsStore();
 
 const newEntry = reactive<NewEntryParams>({});
 const newRow = ref<NewRowparams>({ cells: [], sheet_id: props.table.id });
-const cells = ref<NewCellParams[]>([]);
+const cellsParams = ref<NewCellParams[]>([]);
 
 async function saveEntry(entry: NewEntryParams) {
-  Object.keys(newEntry).forEach((key, i) => {
-    cells.value[i] = {
-      dataType: newEntry.dataType,
-      value: entry[key],
-    };
+  cellsParams.value = [];
+
+  props.table.titles.forEach((title, i) => {
+    const value = entry[title.name];
+    if (value !== undefined && value !== null) {
+      cellsParams.value.push({
+        dataTypeString: title.dataTypeString,
+        value: value.toString(),
+      });
+    }
   });
 
-  newRow.value.cells = cells.value.filter(cell => !!cell.value);
+  newRow.value.cells = cellsParams.value.filter(cell => !!cell.value);
 
   await rowStore.newRow(newRow.value);
   await rowStore.getRows(newRow.value.sheet_id)
 
-  // Resetting 
-  cells.value = [];
+  cellsParams.value = []
 }
 
 async function addData(newData: NewEntryParams) {
@@ -59,8 +63,9 @@ async function addData(newData: NewEntryParams) {
         <Label :for="title.name" class="block text-gray-700 text-sm font-medium mb-2">
           {{ title.name }} / <span class="text-gray-300">{{ title.dataTypeString }}</span>
         </Label>
-        <Input :name="title.name" type="text" @input="newEntry.dataType ??= title.dataType"
-          v-model="newEntry[title.name]"
+        <Input required :name="title.name"
+          :type="['Number'].includes(title.dataTypeString) ? 'number' : (['Date'].includes(title.dataTypeString) ? 'date' : 'text')"
+          @input="newEntry.dataType ??= title.dataTypeString" v-model="newEntry[title.name]"
           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
       </div>
 
@@ -69,7 +74,8 @@ async function addData(newData: NewEntryParams) {
           class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
           Cancel
         </Button>
-        <Button @click="addData(newEntry)" class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
+        <Button v-if="Object.keys(newEntry).length" @click="addData(newEntry)"
+          class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">
           Create
         </Button>
       </div>

@@ -78,7 +78,18 @@ export const useTableStore = defineStore('tables', () => {
     }
   }
 
-  return { tables, addTable, searchFilter, addData, tablesDB, deleteTable }
+  async function updateTable(name: string, table_id: string) {
+    try {
+      const response = await fetch(`${API}/sheet/${table_id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name }) })
+      if (response.ok) {
+        toast({ title: "Success", description: "Updated" })
+        await tablesDB()
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  return { tables, addTable, searchFilter, addData, tablesDB, deleteTable, updateTable }
 })
 
 

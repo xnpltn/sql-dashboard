@@ -17,7 +17,7 @@ export interface NewRowparams {
 }
 
 export interface NewCellParams {
-  dataType: DataType,
+  dataTypeString: string,
   value: string
 }
 

@@ -14,11 +14,29 @@ import {
 } from '@/components/ui/sheet'
 import type { Sheet as She } from '@/types/table';
 import Settings from '@/components/icons/Settings.vue';
+import { ref } from 'vue';
+import { toast } from '../toast';
+import { useTableStore } from '@/stores/tables';
 
+
+const name = ref("")
+const tableStore = useTableStore()
 defineProps<{ table: She }>()
+
+
 
 function editTable(table: She) {
   console.log(table)
+}
+
+async function saveChanges(id: string) {
+  if (name.value.length < 5) {
+    toast({ title: "Error", description: "Name  Should be more than 5 characters" })
+    return
+  } else {
+    await tableStore.updateTable(name.value, id)
+    name.value = ""
+  }
 }
 
 </script>
@@ -32,9 +50,9 @@ function editTable(table: She) {
     </SheetTrigger>
     <SheetContent>
       <SheetHeader>
-        <SheetTitle>Edit profile</SheetTitle>
+        <SheetTitle>Edit Table</SheetTitle>
         <SheetDescription>
-          Edit table
+          Edit tableeeeeeel
         </SheetDescription>
       </SheetHeader>
       <div class="grid gap-4 py-4">
@@ -42,12 +60,12 @@ function editTable(table: She) {
           <Label for="name" class="text-right text-sm">
             Name
           </Label>
-          <Input id="name" value="" class="col-span-3" :placeholder="table.name" />
+          <Input id="name" v-model="name" class="col-span-3" :placeholder="table.name" />
         </div>
       </div>
       <SheetFooter>
-        <SheetClose as-child>
-          <Button type="submit">
+        <SheetClose as-child v-if="name.length > 5">
+          <Button @click="saveChanges(table.id)">
             Save changes
           </Button>
         </SheetClose>
