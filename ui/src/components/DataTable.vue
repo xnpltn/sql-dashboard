@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { toast } from './ui/toast';
 
 const rowStore = useRowsStore();
 const props = defineProps<{ table: Shit }>();
@@ -79,6 +80,26 @@ function edit(rowIndex: number) {
   console.log(editRow);
 }
 
+function randomClassColor(): string {
+  const colors = [
+    'red', 'yellow', 'green', 'blue', 'indigo', 'purple', 'pink', 'gray',
+    'orange', 'teal', 'cyan', 'lime', 'emerald', 'violet', 'rose', 'amber',
+    'fuchsia', 'sky', 'stone'
+  ];
+
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  const randomColor = colors[randomIndex];
+
+  console.log(randomColor)
+  return randomColor
+}
+
+function copyToCB(data: string) {
+  navigator.clipboard.writeText(data).then(() => {
+    toast({ title: "clipboard", description: "Copied ID to clipboard" })
+  })
+}
+
 </script>
 
 <template>
@@ -89,28 +110,32 @@ function edit(rowIndex: number) {
           <input type="checkbox" v-model="selectAll" :id="`select-all`" class="form-checkbox" />
         </th>
         <th class="text-sm"> ID</th>
-        <th v-for="(title, index) in table.titles" :key="index" class="p-3">
+        <th v-for="(title, index) in table.titles" :key="index" class="p-3 text-sm uppercase">
           {{ title.name }}
         </th>
-        <th class="p-3">Created At</th>
-        <th class="p-3">Updated At</th>
+        <th class="p-3 text-xs uppercase">Created At</th>
+        <th class="p-3 text-xs uppercase">Updated At</th>
       </tr>
     </thead>
     <tbody class="px-2">
-      <tr v-if="table.rows" v-for="(row, rowIndex) in rows" :key="rowIndex"
+      <tr v-if="table.rows.length" v-for="(row, rowIndex) in rows" :key="rowIndex"
         :class="rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'" class="hover:bg-gray-100">
-        <td class="p-3 text-sm text-gray-700">
+        <td class="p-3 text-xs text-gray-700">
           <input type="checkbox" :id="`select-row-${rowIndex}`" class="form-checkbox" :checked="isRowSelected(row)"
             @change="toggleRowSelection(row)" />
         </td>
-        <td>{{ row.id }}</td>
+        <td class="p-3 text-sm text-gray-700" @click="copyToCB(row.id)">
+          <span class="cursor-pointer hover:bg-gray-500 rounded bg-gray-100 text-xs p-1 hover:text-white">
+            {{ row.id.length > 5 ? row.id.substring(0, 5) + '...' : row.id }}
+          </span>
+        </td>
         <td v-for="(cell, cellIndex) in row.cells" :key="cellIndex" class="p-3 text-sm text-gray-700">
           {{ cell.value }}
         </td>
-        <td class="p-3 text-sm text-gray-700">
+        <td class=" p-3 text-xs text-gray-700">
           {{ new Date(`${row.cells[0].createdAt}`).toLocaleString() }}
         </td>
-        <td class="p-3 text-sm text-gray-700">
+        <td class="p-3 text-xs text-gray-700">
           {{ new Date(`${row.cells[0].updatedAt}`).toLocaleString() }}
         </td>
         <td>
@@ -152,15 +177,18 @@ function edit(rowIndex: number) {
         </td>
       </tr>
       <tr v-else>
-        <td class="p-3 text-center text-gray-500" colspan="100%">No Data</td>
+        <td class="px-3 py-10 text-center text-gray-500" colspan="100%">No Data</td>
       </tr>
     </tbody>
   </table>
-  <div class="px-3 py-2">
-
-    <Button @click="deleteSelected()" v-if="selected.length"
-      class=" bg-gray-300 text-gray-700 hover:bg-gray-400 px-4 py-2 rounded mx-3">
-      Delete
+  <div v-if="selected.length"
+    class="absolute bottom-20 left-[50%] rounded-full p-2 bg-white text-center transition-all duration-300 flex items-center justify-center gap-3 shadow">
+    <span class="text-sm text-center ml-2"> {{ 'selected items :' }} <span
+        class=" p-1 text-xs bg-green-600 rounded-full">{{
+          selected.length }}</span>
+    </span>
+    <Button @click="deleteSelected()" class="bg-red-300 hover:bg-red-600 rounded-full">
+      <Delete :height="20" :width="20" />
     </Button>
   </div>
 </template>
