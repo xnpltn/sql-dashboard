@@ -5,7 +5,6 @@ import { API } from '@/constants'
 import type { Sheet } from '@/types/table'
 import type { NewSheetParams } from '@/types/params'
 import type { Ref } from "vue"
-import { exampleSheet1, exampleSheet2 } from '@/types/table'
 
 export const useTableStore = defineStore('tables', () => {
   const tables: Ref<Sheet[]> = ref([])

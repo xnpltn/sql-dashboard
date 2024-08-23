@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { Sheet as Shit, Row } from '@/types/table';
+import type { Sheet as Shit, Row, Cell } from '@/types/table';
 import { onBeforeMount, ref, watch, type Ref } from 'vue';
 import { useRowsStore } from '@/stores/rows';
 import { Button } from '@/components/ui/button';
 import Label from './ui/label/Label.vue';
 import Delete from './icons/Delete.vue';
 import Input from './ui/input/Input.vue';
+import type { EditCellParams } from '@/types/params';
 
 import {
   Sheet,
@@ -14,10 +15,13 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from '@/components/ui/sheet';
 import { toast } from './ui/toast';
+import { useEntryStore } from '@/stores/entry';
 
 const rowStore = useRowsStore();
+const entryStore = useEntryStore()
 const props = defineProps<{ table: Shit }>();
 const rows: Ref<Row[]> = ref([]);
 const selectAll = ref(false);
@@ -75,10 +79,6 @@ function deleteSelected() {
   })
 }
 
-let editRow: Row;
-function edit(rowIndex: number) {
-  console.log(editRow);
-}
 
 function randomClassColor(): string {
   const colors = [
@@ -98,6 +98,22 @@ function copyToCB(data: string) {
   navigator.clipboard.writeText(data).then(() => {
     toast({ title: "clipboard", description: "Copied ID to clipboard" })
   })
+}
+
+const newData: Ref<EditCellParams[]> = ref([])
+
+
+function addNewData(cell: EditCellParams) {
+  newData.value.push(cell)
+}
+function edit() {
+  entryStore.update(newData.value).then(() => {
+    rowStore.getRows(props.table.id).then(() => {
+      rows.value = rowStore.rows;
+    })
+  })
+
+  newData.value = []
 }
 
 </script>
@@ -153,21 +169,27 @@ function copyToCB(data: string) {
               <div class="bg-white rounded-lg w-full max-w-lg p-8 shadow-lg">
                 <div class="flex items-center justify-between">
                   <span></span>
-                  <Button @click="deleteRow(row)" class="bg-gray-300 p-2 rounded">
-                    <Delete :height="24" :width="24" class="text-black" />
-                  </Button>
+                  <SheetClose>
+                    <Button @click="deleteRow(row)" class="bg-red-300 hover:bg-red-600 rounded-full text-black">
+                      <span>Delete</span>
+                      <Delete :height="16" :width="16" />
+                    </Button>
+                  </SheetClose>
                 </div>
                 <div v-for="(cell, index) in row.cells" :key="index" class="mb-4">
                   <Label :for="`cell-${index}`" class="block text-gray-700 text-sm font-medium mb-2">
-                    Cell {{ index + 1 }}
+                    <span class="text-gray-500 capitalize">
+                      {{ cell.title }}
+                    </span>
                   </Label>
-                  <Input :id="`cell-${index}`" :placeholder="cell.value" @change="console.log('hi')"
+                  <Input :id="`cell-${cell.id}`" :placeholder="cell.value"
+                    :type="['Number'].includes(cell.dataTypeString) ? 'number' : (['Date'].includes(cell.dataTypeString) ? 'date' : 'text')"
+                    @change="addNewData({ id: cell.id, value: $event.target.value })"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
 
                 <div class="flex justify-end space-x-4 mt-6">
-                  <Button @click="editRow = row; edit(rowIndex)"
-                    class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md">
+                  <Button @click="edit()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-300">
                     Save
                   </Button>
                 </div>
@@ -188,7 +210,7 @@ function copyToCB(data: string) {
           selected.length }}</span>
     </span>
     <Button @click="deleteSelected()" class="bg-red-300 hover:bg-red-600 rounded-full">
-      <Delete :height="20" :width="20" />
+      <Delete :height="16" :width="16" />
     </Button>
   </div>
 </template>

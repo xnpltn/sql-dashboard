@@ -47,6 +47,7 @@ type Title struct {
 type Cell struct {
 	ID             string    `gorm:"type:string;primaryKey;default:(lower(hex(randomblob(16))))" json:"id"`
 	Name           string    `gorm:"type:text" json:"name"`
+	Title          string    `gorm:"type:text" json:"title"`
 	DataType       DataType  `gorm:"dataType"`
 	DataTypeString string    `json:"dataTypeString" gorm:"type:text"`
 	Value          string    `json:"value" gorm:"type:text not null;default:'<empty>'"` // Using text type to store any value.

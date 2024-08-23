@@ -12,7 +12,7 @@ func loadEntryRoutes(apiGroup *echo.Group, app core.App) {
 	entry.POST("", handlers.CreateEntry(app))
 	entry.DELETE("", handlers.DeleteAllEntries(app))
 	entry.DELETE("/:id", handlers.DeleteEntry(app))
-	entry.PUT("/:id", handlers.UpdateEntry(app))
+	entry.PUT("", handlers.UpdateEntry(app))
 	entry.GET("", handlers.GetAllEntries(app))
 	entry.GET("/:id", handlers.GetEntry(app))
 }

@@ -76,7 +76,7 @@ function refresh(t: Sheet) {
         <div class="flex space-x-2">
           <Button @click="deleteTable(table)" class="bg-red-300 hover:bg-red-600 flex items-center justify-center">
             <span class="text-black">Delete</span>
-            <Delete :height="24" :width="24" />
+            <Delete :height="18" :width="18" />
           </Button>
           <Button @click="showNewEntryModal = true">
             + New Entry

@@ -29,11 +29,14 @@ async function saveEntry(entry: NewEntryParams) {
       cellsParams.value.push({
         dataTypeString: title.dataTypeString,
         value: value.toString(),
+        title: title.name
       });
     }
   });
 
   newRow.value.cells = cellsParams.value.filter(cell => !!cell.value);
+
+  console.log(newRow.value.cells)
 
   await rowStore.newRow(newRow.value);
   await rowStore.getRows(newRow.value.sheet_id)
