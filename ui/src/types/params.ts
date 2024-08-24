@@ -32,3 +32,19 @@ export interface EditCellParams {
   value: string;
   //row_id: string;
 }
+
+
+export interface EditTitleParams {
+  id: string;
+  name: string;
+}
+
+export interface EditTableParams {
+  id: string
+  name: string
+}
+
+export interface EditTableInput {
+  table: EditTableParams;
+  titles: EditTitleParams[];
+}

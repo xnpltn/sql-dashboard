@@ -14,28 +14,30 @@ import {
 } from '@/components/ui/sheet'
 import type { Sheet as She } from '@/types/table';
 import Settings from '@/components/icons/Settings.vue';
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 import { toast } from '../toast';
 import { useTableStore } from '@/stores/tables';
+import type { EditTitleParams, EditTableParams, EditTableInput } from '@/types/params';
 
 
-const name = ref("")
+const newTitlesParams: Ref<EditTitleParams[]> = ref([])
+const editTableParams: Ref<EditTableParams> = ref({ id: '', name: '' })
 const tableStore = useTableStore()
+
+
+
+
 defineProps<{ table: She }>()
 
-
-
-function editTable(table: She) {
-  console.log(table)
-}
-
-async function saveChanges(id: string) {
-  if (name.value.length < 5) {
+function saveChanges(input: EditTableInput) {
+  if (input.table.name.length < 5) {
     toast({ title: "Error", description: "Name  Should be more than 5 characters" })
     return
   } else {
-    await tableStore.updateTable(name.value, id)
-    name.value = ""
+    tableStore.updateTable(input).then(() => {
+      tableStore.tablesDB().then(() => { })
+      newTitlesParams.value = []
+    })
   }
 }
 
@@ -44,7 +46,7 @@ async function saveChanges(id: string) {
 <template>
   <Sheet v-if="table">
     <SheetTrigger as-child>
-      <button @click="editTable(table)">
+      <button>
         <Settings :height="24" :width="24" />
       </button>
     </SheetTrigger>
@@ -58,14 +60,25 @@ async function saveChanges(id: string) {
       <div class="grid gap-4 py-4">
         <div class="grid grid-cols-4 items-center gap-4">
           <Label for="name" class="text-right text-sm">
-            Name
+            Table Name
           </Label>
-          <Input id="name" v-model="name" class="col-span-3" :placeholder="table.name" />
+          <Input id="name" @change="editTableParams = { id: table.id, name: $event.target.value }" class="col-span-3"
+            :placeholder="table.name" />
+        </div>
+        <div v-for="(title, index) in table.titles" :key="index" class="mb-4">
+          <Label :for="`cell-${index}`" class="block text-gray-700 text-sm font-medium mb-2">
+            <span class="text-gray-500 capitalize">
+              Field: {{ title.name }}
+            </span>
+          </Label>
+          <Input :id="`cell-${title.id}`" :placeholder="title.name" type="text"
+            @change="newTitlesParams.push({ id: title.id, name: $event.target.value })"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
       </div>
       <SheetFooter>
-        <SheetClose as-child v-if="name.length > 5">
-          <Button @click="saveChanges(table.id)">
+        <SheetClose as-child>
+          <Button @click="saveChanges({ table: editTableParams, titles: newTitlesParams })">
             Save changes
           </Button>
         </SheetClose>

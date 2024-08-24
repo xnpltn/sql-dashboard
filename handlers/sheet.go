@@ -113,26 +113,20 @@ func DeleteSheet(app core.App) echo.HandlerFunc {
 
 func UpdateSheet(app core.App) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		sheetParams := struct {
-			Name string `json:"name"`
-			ID   string
-		}{}
-
-		c.Bind(&sheetParams)
-		sheetParams.ID = c.Param("id")
-		var sheet models.Sheet
-		if res := app.DB().Where("id = ?", sheetParams.ID).First(&sheet); res.Error != nil {
-			fmt.Println(res.Error)
-			return c.JSON(http.StatusBadRequest, echo.Map{"error": "someting went wrong"})
+		var sheetParams models.Sheet
+		if err := c.Bind(&sheetParams); err != nil {
+			fmt.Println(err)
+			return c.JSON(http.StatusBadRequest, "failed to delete sheet")
 		}
-
-		sheet.Name = sheetParams.Name
-		if res := app.DB().Save(&sheet); res.Error != nil {
-			fmt.Println(res.Error)
-			return c.JSON(http.StatusInternalServerError, echo.Map{"error": "someting went wrong"})
+		if err := app.DB().Model(&models.Sheet{}).Where("id = ?", sheetParams.ID).Update("name", sheetParams.Name).Error; err != nil {
+			fmt.Println(err)
+		} else {
+			for _, titls := range sheetParams.Titles {
+				if err := app.DB().Model(&models.Title{}).Where("id = ?", titls.ID).Update("name", titls.Name).Error; err != nil {
+					fmt.Println(err)
+				}
+			}
 		}
-
-		fmt.Println("Saved Successfully")
 		return c.JSON(http.StatusOK, echo.Map{"success": "updated"})
 	}
 }

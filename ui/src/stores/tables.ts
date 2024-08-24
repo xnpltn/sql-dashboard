@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { toast } from '@/components/ui/toast'
 import { API } from '@/constants'
 import type { Sheet } from '@/types/table'
-import type { NewSheetParams } from '@/types/params'
+import type { NewSheetParams, EditTableInput } from '@/types/params'
 import type { Ref } from "vue"
 
 export const useTableStore = defineStore('tables', () => {
@@ -22,6 +22,7 @@ export const useTableStore = defineStore('tables', () => {
       throw Error("something went wrong")
     }
   }
+
 
   async function addTable(params: NewSheetParams) {
     try {
@@ -77,9 +78,13 @@ export const useTableStore = defineStore('tables', () => {
     }
   }
 
-  async function updateTable(name: string, table_id: string) {
+
+  async function updateTable(input: EditTableInput) {
     try {
-      const response = await fetch(`${API}/sheet/${table_id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name }) })
+      const response = await fetch(`${API}/sheet/${input.table.id}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: input.table.id, name: input.table.name, titles: input.titles })
+      })
       if (response.ok) {
         toast({ title: "Success", description: "Updated" })
         await tablesDB()
