@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue'
+import { ref, h } from 'vue'
 import { defineStore } from 'pinia'
-import { toast } from '@/components/ui/toast'
+import { toast, ToastAction } from '@/components/ui/toast'
 import { API } from '@/constants'
 import type { Sheet } from '@/types/table'
 import type { NewSheetParams, EditTableInput } from '@/types/params'
@@ -19,6 +19,17 @@ export const useTableStore = defineStore('tables', () => {
         toast({ title: "Error", description: `something went wrong ` })
       }
     } catch (e) {
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
       throw Error("something went wrong")
     }
   }
@@ -39,6 +50,17 @@ export const useTableStore = defineStore('tables', () => {
 
       toast({ title: "Success", description: `table ${params.name} added successfully` })
     } catch (e) {
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
       throw Error("Error sending data")
     }
   }
@@ -65,16 +87,20 @@ export const useTableStore = defineStore('tables', () => {
 
       if (!response.ok) {
         throw new Error("Failed to delete the table");
-      } else {
-
-        const result = await response.json();
-        tables.value = tables.value.filter((table) => table.id != table_id)
-        toast({ title: "Success", description: "Table deleted" });
-        console.log(result);
       }
-    } catch (error) {
-      toast({ title: "Error", description: "Cannot delete table" });
-      console.error(error);
+    } catch (e) {
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
+      console.error(e);
     }
   }
 
@@ -90,7 +116,18 @@ export const useTableStore = defineStore('tables', () => {
         await tablesDB()
       }
     } catch (e) {
-      console.log(e)
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
+      console.error(e);
     }
   }
   return { tables, addTable, searchFilter, addData, tablesDB, deleteTable, updateTable }

@@ -31,6 +31,12 @@ async function saveEntry(entry: NewEntryParams) {
         value: value.toString(),
         title: title.name
       });
+    } else {
+      cellsParams.value.push({
+        dataTypeString: title.dataTypeString,
+        value: 'N/A',
+        title: title.name
+      });
     }
   });
 

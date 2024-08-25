@@ -6,6 +6,7 @@ import { useTableStore } from '@/stores/tables';
 import { onBeforeMount, ref, watch } from 'vue';
 import type { Sheet } from '@/types/table';
 import type { Ref } from "vue"
+import { toast } from './ui/toast';
 
 
 const tableStore = useTableStore()
@@ -13,11 +14,29 @@ const searchValue = ref("")
 
 const loading = ref(true)
 const tables: Ref<Sheet[]> = ref([])
-onBeforeMount(async () => {
-  await tableStore.tablesDB()
-  tables.value = tableStore.tables
-  loading.value = false
-})
+let intervalId: number | null = null;
+
+function fetchTables() {
+  tableStore.tablesDB().then(() => {
+    tables.value = tableStore.tables;
+    loading.value = false;
+
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  }).catch(() => {
+    loading.value = true;
+    toast({ title: "Error", description: "Error Connecting to the Server", variant: "destructive" })
+  });
+}
+
+onBeforeMount(() => {
+  fetchTables(); // Initial fetch
+  intervalId = setInterval(fetchTables, 10000);
+});
+
+
 
 watch(searchValue, async (newValue) => { tableStore.tables = tableStore.searchFilter(newValue.trim()) })
 watch(() => tableStore.tables, (newt) => tables.value = newt)
@@ -42,7 +61,15 @@ watch(() => tableStore.tables, (newt) => tables.value = newt)
       </div>
     </nav>
     <nav v-else>
-      Loading
+      <div class="flex items-center justify-center">
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
+        </svg>
+      </div>
     </nav>
     <Button @click="$emit('openModal')"
       class=" mt-3 w-full bg-gray-50 hover:bg-gray-200 text-black border-black border-2">+

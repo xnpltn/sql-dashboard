@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Sheet as Shit, Row, Cell } from '@/types/table';
+import type { Sheet as S, Row } from '@/types/table';
 import { onBeforeMount, ref, watch, type Ref } from 'vue';
 import { useRowsStore } from '@/stores/rows';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import Label from './ui/label/Label.vue';
 import Delete from './icons/Delete.vue';
 import Input from './ui/input/Input.vue';
 import type { EditCellParams } from '@/types/params';
+import Settings from './icons/Settings.vue';
 
 import {
   Sheet,
@@ -22,7 +23,7 @@ import { useEntryStore } from '@/stores/entry';
 
 const rowStore = useRowsStore();
 const entryStore = useEntryStore()
-const props = defineProps<{ table: Shit }>();
+const props = defineProps<{ table: S }>();
 const rows: Ref<Row[]> = ref([]);
 const selectAll = ref(false);
 const selected: Ref<Row[]> = ref([]);
@@ -80,20 +81,6 @@ function deleteSelected() {
 }
 
 
-function randomClassColor(): string {
-  const colors = [
-    'red', 'yellow', 'green', 'blue', 'indigo', 'purple', 'pink', 'gray',
-    'orange', 'teal', 'cyan', 'lime', 'emerald', 'violet', 'rose', 'amber',
-    'fuchsia', 'sky', 'stone'
-  ];
-
-  const randomIndex = Math.floor(Math.random() * colors.length);
-  const randomColor = colors[randomIndex];
-
-  console.log(randomColor)
-  return randomColor
-}
-
 function copyToCB(data: string) {
   navigator.clipboard.writeText(data).then(() => {
     toast({ title: "clipboard", description: "Copied ID to clipboard" })
@@ -142,11 +129,12 @@ function edit() {
         </td>
         <td class="p-3 text-sm text-gray-700" @click="copyToCB(row.id)">
           <span class="cursor-pointer hover:bg-gray-500 rounded bg-gray-100 text-xs p-1 hover:text-white">
-            {{ row.id.length > 5 ? row.id.substring(0, 5) + '...' : row.id }}
+            {{ row.id.length > 5 ? row.id.substring(0, 7) + '...' : row.id }}
           </span>
         </td>
-        <td v-for="(cell, cellIndex) in row.cells" :key="cellIndex" class="p-3 text-sm text-gray-700">
-          {{ cell.value }}
+        <td v-for="(cell, cellIndex) in row.cells" :key="cellIndex"
+          :class="{ 'p-3 text-sm': true, 'text-xs text-gray-300': cell.value === 'N/A', 'text-gray-700': cell.value !== 'N/A' }">
+          {{ cell.value == '' ? 'N/A' : cell.value }}
         </td>
         <td class=" p-3 text-xs text-gray-700">
           {{ new Date(`${row.cells[0].createdAt}`).toLocaleString() }}
@@ -154,10 +142,10 @@ function edit() {
         <td class="p-3 text-xs text-gray-700">
           {{ new Date(`${row.cells[0].updatedAt}`).toLocaleString() }}
         </td>
-        <td>
+        <td class="max-w-5">
           <Sheet>
             <SheetTrigger class="">
-              <span class="bg-gray-300 p-2 rounded">Edit</span>
+              <Settings :height="24" :width="24" />
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>

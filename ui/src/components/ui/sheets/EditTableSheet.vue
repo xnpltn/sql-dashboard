@@ -58,13 +58,18 @@ function saveChanges(input: EditTableInput) {
         </SheetDescription>
       </SheetHeader>
       <div class="grid gap-4 py-4">
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="name" class="text-right text-sm">
-            Table Name
-          </Label>
-          <Input id="name" @change="editTableParams = { id: table.id, name: $event.target.value }" class="col-span-3"
-            :placeholder="table.name" />
+        <h3>Edit Table</h3>
+        <div class=" mb-10">
+          <div class="grid grid-cols-2  items-center gap-4">
+            <Label for="name" class="text-sm">
+              Table Name
+            </Label>
+            <Input id="name" @change="editTableParams = { id: table.id, name: $event.target.value }" class="col-span-3"
+              :placeholder="table.name" />
+          </div>
         </div>
+        <hr class="">
+        <h3>Edit Fields</h3>
         <div v-for="(title, index) in table.titles" :key="index" class="mb-4">
           <Label :for="`cell-${index}`" class="block text-gray-700 text-sm font-medium mb-2">
             <span class="text-gray-500 capitalize">

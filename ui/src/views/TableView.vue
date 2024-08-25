@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import Button from '@/components/ui/button/Button.vue';
-import { ref, watch, onBeforeMount } from 'vue';
+import { ref, watch, onBeforeMount, h } from 'vue';
 import NewEntryModal from '@/components/modals/NewEntryModal.vue';
 import NotFound from './NotFound.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -11,8 +11,8 @@ import { useRowsStore } from '@/stores/rows';
 import Delete from '@/components/icons/Delete.vue';
 import Refresh from '@/components/icons/Refresh.vue';
 import EditTableSheet from '@/components/ui/sheets/EditTableSheet.vue';
-
 import { toast } from '@/components/ui/toast';
+import { ToastAction } from '@/components/ui/toast'
 
 const route = useRoute()
 const router = useRouter()
@@ -50,8 +50,18 @@ function refresh(t: Sheet) {
   tableStore.tablesDB().then(() => {
     rowStore.getRows(t.id).then(() => {
       toast({ title: "Refresh", description: "Refresh done" })
-    }).catch(() => {
-      toast({ title: "Refresh", description: "Something Went Wrong" })
+    }).catch((e) => {
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: "Something Went Wrong"
+        })
+      }
     })
   })
 }
@@ -85,10 +95,6 @@ function refresh(t: Sheet) {
       </div>
 
       <div class="bg-white rounded-lg shadow">
-        <div class="p-4">
-          <input type="text" placeholder="Search"
-            class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
         <DataTable :table="tableToShow" />
         <div class="p-4">
           <Button @click="showNewEntryModal = true"

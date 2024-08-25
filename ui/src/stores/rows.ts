@@ -1,11 +1,11 @@
 
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, h } from "vue";
 import type { Ref } from "vue";
 import { API } from "@/constants";
 import type { Row } from "@/types/table"
 import type { NewRowparams } from "@/types/params";
-import { toast } from "@/components/ui/toast";
+import { toast, ToastAction } from "@/components/ui/toast";
 
 
 export const useRowsStore = defineStore("rows", () => {
@@ -19,7 +19,18 @@ export const useRowsStore = defineStore("rows", () => {
         return data as Row[]
       }
     } catch (e) {
-      toast({ title: "Error", description: "Something went wrong" })
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
+      console.error(e)
     }
 
   }
@@ -31,7 +42,18 @@ export const useRowsStore = defineStore("rows", () => {
         toast({ title: "Success ", description: ` new entry created` })
       }
     } catch (e) {
-      toast({ title: "Error", description: "Something went wrong" })
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
+      console.error(e)
     }
   }
   async function deleteRow(row: Row) {
@@ -44,7 +66,18 @@ export const useRowsStore = defineStore("rows", () => {
       }
       console.log(await response.json())
     } catch (e) {
-      toast({ title: "Error", description: "Something went wrong" })
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
+      console.error(e)
     }
   }
 
@@ -53,7 +86,18 @@ export const useRowsStore = defineStore("rows", () => {
       const response = await fetch(`${API}/delete-rows`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(rows) })
       console.log(await response.json())
     } catch (e) {
-      toast({ title: "Error", description: "Something went wrong" })
+      if (e instanceof Error) {
+        toast({
+          title: "Refresh",
+          action: h(ToastAction, {
+            altText: 'Try again',
+          }, {
+            default: () => 'Try again',
+          }), variant: 'destructive',
+          description: `Error - ${e.message || "Something Went Wrong"}`
+        })
+      }
+      console.error(e)
     }
   }
 
