@@ -3,7 +3,7 @@
 import Button from './ui/button/Button.vue';
 import { RouterLink } from 'vue-router';
 import { useTableStore } from '@/stores/tables';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import type { Sheet } from '@/types/table';
 import type { Ref } from "vue"
 import { toast } from './ui/toast';
@@ -31,15 +31,19 @@ function fetchTables() {
   });
 }
 
-onBeforeMount(() => {
+onMounted(() => {
   fetchTables(); // Initial fetch
   intervalId = setInterval(fetchTables, 10000);
 });
 
 
 
-watch(searchValue, async (newValue) => { tableStore.tables = tableStore.searchFilter(newValue.trim()) })
-watch(() => tableStore.tables, (newt) => tables.value = newt)
+watchEffect(() => {
+  tableStore.tables = tableStore.searchFilter(searchValue.value.trim())
+})
+watchEffect(() =>
+  tables.value = tableStore.tables
+);
 
 </script>
 

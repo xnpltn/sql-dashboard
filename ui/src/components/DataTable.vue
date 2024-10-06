@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Sheet as S, Row } from '@/types/table';
-import { onBeforeMount, ref, watch, type Ref } from 'vue';
+import { onMounted, ref, watch, watchEffect, type Ref } from 'vue';
 import { useRowsStore } from '@/stores/rows';
 import { Button } from '@/components/ui/button';
 import Label from './ui/label/Label.vue';
@@ -28,25 +28,23 @@ const rows: Ref<Row[]> = ref([]);
 const selectAll = ref(false);
 const selected: Ref<Row[]> = ref([]);
 
-onBeforeMount(async () => {
-  await rowStore.getRows(props.table.id);
-  rows.value = rowStore.rows;
+onMounted(() => {
+  rowStore.getRows(props.table.id).then(() => {
+    rows.value = rowStore.rows;
+  })
 });
 
-watch(
-  () => props.table.id,
-  async () => {
-    await rowStore.getRows(props.table.id);
-    rows.value = rowStore.rows;
-  }
-);
 
-watch(
-  () => rowStore.rows,
-  (newRows) => {
-    rows.value = newRows;
-  }
-);
+watchEffect(() => {
+  rowStore.getRows(props.table.id).then(() => {
+    rows.value = rowStore.rows
+  })
+})
+
+
+watchEffect(() => {
+  rows.value = rowStore.rows
+})
 
 watch(selectAll, (newValue) => {
   selected.value = newValue ? [...rows.value] : [];

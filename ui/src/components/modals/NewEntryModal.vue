@@ -42,7 +42,6 @@ async function saveEntry(entry: NewEntryParams) {
 
   newRow.value.cells = cellsParams.value.filter(cell => !!cell.value);
 
-  console.log(newRow.value.cells)
 
   await rowStore.newRow(newRow.value);
   await rowStore.getRows(newRow.value.sheet_id)

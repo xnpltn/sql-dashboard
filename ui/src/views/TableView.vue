@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import Button from '@/components/ui/button/Button.vue';
-import { ref, watch, onBeforeMount, h } from 'vue';
+import { ref, onBeforeMount, h, watchEffect } from 'vue';
 import NewEntryModal from '@/components/modals/NewEntryModal.vue';
 import NotFound from './NotFound.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -32,13 +32,10 @@ onBeforeMount(async () => {
 
 let tableToShow: Sheet
 
-watch(
-  () => route.params.id,
-  (newId) => {
-    table = tableStore.tables.find((table) => table.id == newId) as Sheet
-    tableToShow = table
-  }
-)
+watchEffect(() => {
+  table = tableStore.tables.find((table) => table.id == route.params.id) as Sheet
+  tableToShow = table
+})
 
 async function deleteTable(t: Sheet) {
   await tableStore.deleteTable(t.id)
